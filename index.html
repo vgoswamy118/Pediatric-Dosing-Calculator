@@ -253,7 +253,7 @@ li { margin-bottom: 2px; }
     if (d.t500) rows.push(`<div><span>Extra strength tablets, 500 mg</span><b>${d.t500} tablet${d.t500 > 1 ? "s" : ""} (${d.t500 * 500} mg)</b></div>`);
     if (rows.length) alt = `<div class="alt"><div class="note" style="margin-bottom:2px">Or, instead of liquid:</div>${rows.join("")}</div>`;
     const warn = age === "u3" ? `<div class="stop">Give only if your provider has told you to.<span>Babies under 3 months with a fever of 100.4°F or higher need to be seen right away.</span></div>` : "";
-    return `<div class="name"><b>Tylenol® (acetaminophen)</b><span>For fever or pain</span></div>
+    return `<div class="name"><b>Tylenol® or Genexa® (acetaminophen)</b><span>For fever or pain</span></div>
       ${warn}
       <div class="dose"><div class="amt">${fmt(d.mL)} <small>mL</small></div>
         <div class="what"><b>Infants' or Children's liquid</b>160 mg in each 5 mL. This dose is ${fmt(d.mg)} mg.</div></div>
@@ -267,7 +267,7 @@ li { margin-bottom: 2px; }
   function ibuHTML(d) {
     const CH = 100;
     if (!d) return `<div class="name"><b>Motrin® or Advil® (ibuprofen)</b><span>For fever or pain</span></div>
-      <div class="stop">Do not give ibuprofen yet.<span>Ibuprofen is not for babies under 6 months old. Use only Tylenol, and only as directed.</span></div>`;
+      <div class="stop">Do not give ibuprofen yet.<span>Ibuprofen is not for babies under 6 months old. Use only acetaminophen (Tylenol or Genexa), and only as directed.</span></div>`;
     const rows = [];
     if (d.drops) rows.push(`<div><span>Infants' drops, 50 mg in 1.25 mL</span><b>${fmt(d.drops)} mL (${fmt(d.dropsMg)} mg)</b></div>`);
     if (d.chew) rows.push(`<div><span>Children's chewable tablets, 100 mg</span><b>${d.chew} tablet${d.chew > 1 ? "s" : ""} (${d.chew * CH} mg)</b></div>`);
@@ -339,7 +339,7 @@ li { margin-bottom: 2px; }
     L.push(`Fever and pain medicine dosing${nm ? " for " + nm : ""}`);
     L.push(`Weight: ${$("o-wt").textContent}. Age: ${AGE[age]}. Date: ${$("o-date").textContent}.`);
     L.push("");
-    L.push(`Tylenol (acetaminophen), Infants' or Children's liquid 160 mg/5 mL: give ${fmt(r.apap.mL)} mL (${fmt(r.apap.mg)} mg) every 4 to 6 hours as needed. No more than 5 doses in 24 hours.${age === "u3" ? " Give only if your provider has told you to." : ""}`);
+    L.push(`Tylenol or Genexa (acetaminophen), Infants' or Children's liquid 160 mg/5 mL: give ${fmt(r.apap.mL)} mL (${fmt(r.apap.mg)} mg) every 4 to 6 hours as needed. No more than 5 doses in 24 hours.${age === "u3" ? " Give only if your provider has told you to." : ""}`);
     if (r.ibu) L.push(`Motrin or Advil (ibuprofen), Children's liquid 100 mg/5 mL: give ${fmt(r.ibu.mL)} mL (${fmt(r.ibu.mg)} mg) every 6 to 8 hours as needed, with food. No more than 4 doses in 24 hours.`);
     else L.push("Ibuprofen (Motrin or Advil): do not give. It is not for babies under 6 months old.");
     if (last.ta) L.push(`Tylenol was last given ${$("a-w").value} at ${last.ta.given}. Next Tylenol dose: ${last.ta.next}${last.ta.tomorrow ? " tomorrow" : ""} or later, only if needed.`);
