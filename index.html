@@ -1,0 +1,388 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pediatric Fever Dosing</title>
+<style>
+/* Layout: control strip on top (screen only), then a letter-size handout sheet that mirrors the Sollis patient handout */
+:root {
+  --ink: #141414;
+  --muted: #5b5853;
+  --paper: #ffffff;
+  --desk: #e9e6e1;
+  --sand: #f3f0ec;
+  --rule: #d9d4ce;
+  --alert: #a3261b;
+  --alert-bg: #fbeeec;
+  --font-body: "Liberation Sans", Arial, Helvetica, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--desk); color: var(--ink); font-family: var(--font-body); font-size: 14px; padding-block: 18px 40px; padding-inline: 16px; }
+
+/* Controls */
+.controls { max-width: 8.5in; margin: 0 auto 14px; background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; display: grid; gap: 12px; }
+.controls h2 { margin: 0; font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+.fields { display: grid; grid-template-columns: 1.3fr 1.2fr 1.4fr 1fr; gap: 12px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: 12px; font-weight: 700; }
+.field input, .field select { font: inherit; padding: 8px 10px; border: 1px solid #bdb7b0; border-radius: 6px; background: var(--paper); color: var(--ink); width: 100%; min-width: 0; }
+.field input:focus-visible, .field select:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.wt { display: flex; gap: 6px; }
+.wt input { flex: 1; font-size: 18px; font-weight: 700; }
+.seg { display: inline-flex; border: 1px solid #bdb7b0; border-radius: 6px; overflow: hidden; flex: none; }
+.seg button { font: inherit; font-weight: 700; border: 0; background: var(--paper); color: var(--ink); padding: 0 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { font: inherit; font-weight: 700; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+.btn.ghost { background: var(--paper); color: var(--ink); }
+.status { font-size: 12px; color: var(--muted); }
+.linkbtn { font: inherit; font-size: 12px; font-weight: 700; color: var(--ink); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+.next { border: 1.5px dashed var(--ink); border-radius: 6px; padding: 6px 9px; display: grid; gap: 2px; }
+.next small { font-size: 7pt; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); }
+.next .when { font-size: 12.5pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+.next .when span { font-size: 8.6pt; font-weight: 400; white-space: nowrap; }
+.next .sub2 { font-size: 8.4pt; }
+.err { color: var(--alert); font-weight: 700; font-size: 13px; }
+
+/* Sheet */
+.sheet { max-width: 8.5in; margin: 0 auto; background: var(--paper); padding: 0.36in 0.5in 0.25in; box-shadow: 0 1px 4px rgba(0,0,0,.12); font-size: 9.6pt; line-height: 1.36; }
+header.top { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--ink); padding-bottom: 6px; margin-bottom: 10px; gap: 10px; }
+.logo { font-size: 17pt; letter-spacing: 2.5px; }
+.logo b { font-weight: 700; }
+.tag { font-size: 7.5pt; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; }
+h1 { font-size: 18pt; margin: 2px 0 2px; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 10pt; margin: 0 0 10px; }
+h3 { font-size: 9.8pt; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 5px; }
+p { margin: 0 0 6px; }
+ul { margin: 0; padding-left: 16px; }
+li { margin-bottom: 2px; }
+.pt { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 8px 14px; background: var(--sand); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; }
+.pt div { min-width: 0; }
+.pt small { display: block; font-size: 7pt; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.pt b { font-size: 11pt; font-variant-numeric: tabular-nums; }
+.meds { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 10px; }
+.med { border: 1.5px solid var(--ink); border-radius: 8px; padding: 10px 12px 9px; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.med .name { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+.med .name b { font-size: 12.5pt; }
+.med .name span { font-size: 8pt; color: var(--muted); text-align: right; }
+.dose { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+.dose .amt { font-size: 24pt; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dose .amt small { font-size: 11pt; }
+.dose .what { font-size: 8.6pt; }
+.dose .what b { display: block; font-size: 9.2pt; }
+.rules { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.rule { background: var(--sand); border-radius: 6px; padding: 5px 8px; }
+.rule small { display: block; font-size: 7pt; color: var(--muted); letter-spacing: .8px; text-transform: uppercase; }
+.rule b { font-size: 9.6pt; }
+.alt { font-size: 8.4pt; border-top: 1px dashed var(--rule); padding-top: 5px; }
+.alt div { display: flex; justify-content: space-between; gap: 8px; }
+.alt div b { white-space: nowrap; }
+.note { font-size: 8.4pt; color: var(--muted); }
+.stop { background: var(--alert-bg); color: var(--alert); border-radius: 6px; padding: 8px 10px; font-weight: 700; font-size: 9.4pt; }
+.stop span { display: block; font-weight: 400; color: var(--ink); font-size: 8.8pt; margin-top: 3px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-top: 4px; }
+.cols > div { min-width: 0; }
+.call { border-left: 4px solid var(--alert); }
+.bottom { background: var(--sand); border-left: 4px solid var(--ink); padding: 7px 10px; margin-top: 10px; border-radius: 0 6px 6px 0; }
+.log { width: 100%; border-collapse: collapse; font-size: 8.4pt; margin-top: 4px; }
+.log th { text-align: left; background: var(--ink); color: var(--paper); padding: 3px 6px; font-size: 7.6pt; letter-spacing: .6px; text-transform: uppercase; }
+.log td { border-bottom: 1px solid var(--rule); height: 19px; }
+.foot { border-top: 1px solid #ccc; margin-top: 9px; padding-top: 5px; font-size: 6.8pt; color: #666; line-height: 1.35; display: flex; justify-content: space-between; gap: 12px; }
+.sig { white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .fields { grid-template-columns: 1fr 1fr; }
+  .sheet { padding: 20px 16px; font-size: 13px; }
+  .meds, .cols, .rules { grid-template-columns: 1fr; }
+  .pt { grid-template-columns: 1fr 1fr; }
+  .logo { font-size: 18px; }
+}
+@media (max-width: 420px) { .fields { grid-template-columns: 1fr; } }
+@media print {
+  @page { size: letter; margin: 0; }
+  body { background: var(--paper); padding: 0; }
+  .controls { display: none; }
+  .sheet { box-shadow: none; max-width: none; width: 8.5in; min-height: 11in; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<section class="controls" aria-label="Enter patient details">
+  <h2>Provider entry · not printed</h2>
+  <div class="fields">
+    <div class="field"><label for="nm">Child's name</label><input id="nm" type="text" placeholder="Optional" autocomplete="off"></div>
+    <div class="field"><label for="w">Weight</label>
+      <div class="wt"><input id="w" type="number" inputmode="decimal" min="0" step="0.1" value="32">
+        <div class="seg" role="group" aria-label="Weight unit"><button type="button" id="u-lb" aria-pressed="true">lb</button><button type="button" id="u-kg" aria-pressed="false">kg</button></div>
+      </div>
+    </div>
+    <div class="field"><label for="age">Age</label>
+      <select id="age">
+        <option value="u3">Under 3 months</option>
+        <option value="m3">3 to 5 months</option>
+        <option value="m6">6 months to 2 years</option>
+        <option value="y2" selected>2 years and older</option>
+      </select>
+    </div>
+    <div class="field"><label for="pv">Provider</label><input id="pv" type="text" value="Adam J. Bello, MD"></div>
+  </div>
+  <div class="fields last">
+    <div class="field"><label for="a-t">Tylenol last given at</label><input id="a-t" type="time"></div>
+    <div class="field"><label for="a-w">Where</label><select id="a-w"><option>in clinic</option><option>at home</option><option>at another facility</option></select></div>
+    <div class="field"><label for="i-t">Motrin last given at</label><input id="i-t" type="time"></div>
+    <div class="field"><label for="i-w">Where</label><select id="i-w"><option>in clinic</option><option>at home</option><option>at another facility</option></select></div>
+  </div>
+  <p class="status" style="margin:0">Leave a time blank if that medicine was not given. <button type="button" class="linkbtn" id="now-a">Tylenol given now</button> · <button type="button" class="linkbtn" id="now-i">Motrin given now</button></p>
+  <div class="actions">
+    <button class="btn" type="button" id="print" hidden>Print handout</button>
+    <button class="btn ghost" type="button" id="copy">Copy instructions as text</button>
+    <span class="status" id="status" aria-live="polite">Sample values shown. Enter the patient's weight and age.</span>
+    <span class="err" id="err" role="alert"></span>
+  </div>
+</section>
+
+<article class="sheet" id="sheet">
+  <header class="top"><div class="logo"><b>SOLLIS</b><span>HEALTH</span></div><div class="tag">Patient information · Pediatrics</div></header>
+  <h1>Fever and Pain Medicine for Your Child</h1>
+  <p class="sub">How much Tylenol® and Motrin® to give, and how often, based on your child's weight today</p>
+
+  <div class="pt">
+    <div><small>Child</small><b id="o-name">________________</b></div>
+    <div><small>Weight today</small><b id="o-wt"></b></div>
+    <div><small>Age</small><b id="o-age"></b></div>
+    <div><small>Date</small><b id="o-date"></b></div>
+  </div>
+
+  <div class="meds">
+    <section class="med" id="apap"></section>
+    <section class="med" id="ibu"></section>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Giving medicine safely</h3>
+      <ul>
+        <li><b>Use the syringe or cup that came with the medicine.</b> Kitchen spoons are not accurate.</li>
+        <li><b>Check the strength on the box.</b> The doses above only work for the strengths listed. Store brands are fine if the strength matches.</li>
+        <li><b>Read the labels of cold and flu products.</b> Many already contain acetaminophen (Tylenol). Do not double up.</li>
+        <li><b>Do not switch back and forth</b> between Tylenol and Motrin unless your provider tells you to.</li>
+        <li><b>Never give aspirin</b> to children or teens.</li>
+        <li>The goal is comfort, not a normal temperature. Let a sleeping child sleep.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Call us or get care right away if</h3>
+      <ul>
+        <li>Your baby is <b>under 3 months</b> with a temperature of <b>100.4°F</b> or higher</li>
+        <li>Fever is <b>104°F</b> or higher, or lasts more than <b>3 days</b> (more than 2 days if under age 2)</li>
+        <li>Trouble breathing, a stiff neck, a seizure, or a rash that looks like bruises or tiny dots</li>
+        <li>Very sleepy, hard to wake, or will not stop crying</li>
+        <li>Not drinking, or fewer wet diapers (fewer than 3 in 24 hours)</li>
+        <li>You think you gave too much medicine. Call <b>Poison Control at 1&#8209;800&#8209;222&#8209;1222</b>, open 24 hours.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:10px">Dose log</h3>
+  <table class="log" aria-label="Dose log">
+    <thead><tr><th style="width:22%">Day and time</th><th style="width:26%">Medicine</th><th style="width:18%">Amount</th><th>Temperature or notes</th></tr></thead>
+    <tbody><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody>
+  </table>
+
+  <div class="bottom"><b>Bottom line:</b> Give the amount for your child's weight, wait the full time between doses, and stay under the daily limit. Doses change as your child grows, so ask us for an updated sheet if their weight changes.</div>
+
+  <div class="foot"><span>Doses follow standard pediatric weight-based dosing: acetaminophen 10 to 15 mg/kg every 4 to 6 hours (maximum 5 doses, 75 mg/kg, or 4,000 mg per day) and ibuprofen 5 to 10 mg/kg every 6 to 8 hours (maximum 4 doses or 40 mg/kg per day), for children 6 months and older. This sheet is for this child only and does not replace advice from your provider.</span><span class="sig" id="o-pv"></span></div>
+</article>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  let unit = "lb";
+
+  const AGE = { u3: "Under 3 months", m3: "3 to 5 months", m6: "6 months to 2 years", y2: "2 years and older" };
+
+  // Round DOWN so the measured amount never exceeds the target mg/kg
+  function measure(mL) {
+    const step = mL < 5 ? 0.25 : 0.5;
+    return Math.floor(mL / step + 1e-9) * step;
+  }
+  const fmt = (n) => (Math.round(n * 100) / 100).toString();
+
+  // Whole tablets that land in the effective range (minMgKg to maxMg)
+  function tabs(kg, maxMg, minMgKg, strength) {
+    const n = Math.floor(maxMg / strength + 1e-9);
+    if (n < 1 || n > 4) return null;
+    if (n * strength < Math.min(minMgKg * kg, maxMg * 0.8)) return null;
+    return n;
+  }
+
+  function calc(kg, age) {
+    const out = {};
+    // Acetaminophen
+    const aMax = Math.min(15 * kg, 1000);
+    const aML = measure(aMax / 32); // 160 mg / 5 mL
+    out.apap = {
+      mL: aML, mg: aML * 32,
+      chew: age === "y2" ? tabs(kg, aMax, 10, 160) : null,
+      t325: kg >= 40 ? tabs(kg, aMax, 10, 325) : null,
+      t500: kg >= 40 ? tabs(kg, aMax, 10, 500) : null,
+      dayMax: Math.min(aML * 32 * 5, 4000)
+    };
+    // Ibuprofen
+    if (age === "u3" || age === "m3") { out.ibu = null; }
+    else {
+      const iMax = Math.min(10 * kg, 400);
+      const iML = measure(iMax / 20); // 100 mg / 5 mL
+      // 50 mg / 1.25 mL; infant syringes are marked at 1.25 and 1.875 mL only
+      const drops = kg < 11 ? ([1.875, 1.25].find((v) => v * 40 <= iMax + 1e-9 && v * 40 >= 5 * kg) || null) : null;
+      out.ibu = {
+        mL: iML, mg: iML * 20,
+        drops: drops, dropsMg: drops ? drops * 40 : null,
+        chew: age === "y2" ? tabs(kg, iMax, 5, 100) : null,
+        t200: kg >= 40 ? tabs(kg, iMax, 5, 200) : null
+      };
+    }
+    return out;
+  }
+
+  function apapHTML(d, age) {
+    const CH = 160;
+    let alt = "";
+    const rows = [];
+    if (d.chew) rows.push(`<div><span>Children's chewable or melt tablets, 160 mg</span><b>${d.chew} tablet${d.chew > 1 ? "s" : ""} (${d.chew * CH} mg)</b></div>`);
+    if (d.t325) rows.push(`<div><span>Regular strength tablets, 325 mg</span><b>${d.t325} tablet${d.t325 > 1 ? "s" : ""} (${d.t325 * 325} mg)</b></div>`);
+    if (d.t500) rows.push(`<div><span>Extra strength tablets, 500 mg</span><b>${d.t500} tablet${d.t500 > 1 ? "s" : ""} (${d.t500 * 500} mg)</b></div>`);
+    if (rows.length) alt = `<div class="alt"><div class="note" style="margin-bottom:2px">Or, instead of liquid:</div>${rows.join("")}</div>`;
+    const warn = age === "u3" ? `<div class="stop">Give only if your provider has told you to.<span>Babies under 3 months with a fever of 100.4°F or higher need to be seen right away.</span></div>` : "";
+    return `<div class="name"><b>Tylenol® (acetaminophen)</b><span>For fever or pain</span></div>
+      ${warn}
+      <div class="dose"><div class="amt">${fmt(d.mL)} <small>mL</small></div>
+        <div class="what"><b>Infants' or Children's liquid</b>160 mg in each 5 mL. This dose is ${fmt(d.mg)} mg.</div></div>
+      <!--NEXT--><div class="rules">
+        <div class="rule"><small>How often</small><b>Every 4 to 6 hours</b></div>
+        <div class="rule"><small>Daily limit</small><b>No more than 5 doses</b></div>
+      </div>${alt}
+      <div class="note">Can be given with or without food.</div>`;
+  }
+
+  function ibuHTML(d) {
+    const CH = 100;
+    if (!d) return `<div class="name"><b>Motrin® or Advil® (ibuprofen)</b><span>For fever or pain</span></div>
+      <div class="stop">Do not give ibuprofen yet.<span>Ibuprofen is not for babies under 6 months old. Use only Tylenol, and only as directed.</span></div>`;
+    const rows = [];
+    if (d.drops) rows.push(`<div><span>Infants' drops, 50 mg in 1.25 mL</span><b>${fmt(d.drops)} mL (${fmt(d.dropsMg)} mg)</b></div>`);
+    if (d.chew) rows.push(`<div><span>Children's chewable tablets, 100 mg</span><b>${d.chew} tablet${d.chew > 1 ? "s" : ""} (${d.chew * CH} mg)</b></div>`);
+    if (d.t200) rows.push(`<div><span>Adult tablets, 200 mg</span><b>${d.t200} tablet${d.t200 > 1 ? "s" : ""} (${d.t200 * 200} mg)</b></div>`);
+    const alt = rows.length ? `<div class="alt"><div class="note" style="margin-bottom:2px">Or, instead of children's liquid:</div>${rows.join("")}</div>` : "";
+    return `<div class="name"><b>Motrin® or Advil® (ibuprofen)</b><span>For fever or pain</span></div>
+      <div class="dose"><div class="amt">${fmt(d.mL)} <small>mL</small></div>
+        <div class="what"><b>Children's liquid</b>100 mg in each 5 mL. This dose is ${fmt(d.mg)} mg.</div></div>
+      <!--NEXT--><div class="rules">
+        <div class="rule"><small>How often</small><b>Every 6 to 8 hours</b></div>
+        <div class="rule"><small>Daily limit</small><b>No more than 4 doses</b></div>
+      </div>${alt}
+      <div class="note">Give with food or milk. Skip it if your child is vomiting or not drinking.</div>`;
+  }
+
+  // Last-dose timing
+  function clock(h, m) {
+    const ap = h >= 12 ? "PM" : "AM";
+    const hh = h % 12 === 0 ? 12 : h % 12;
+    return `${hh}:${String(m).padStart(2, "0")} ${ap}`;
+  }
+  function timing(val, hours) {
+    if (!val) return null;
+    const [h, m] = val.split(":").map(Number);
+    if (isNaN(h) || isNaN(m)) return null;
+    const total = h * 60 + m + hours * 60;
+    const nh = Math.floor(total / 60);
+    return { given: clock(h, m), next: clock(nh % 24, total % 60), tomorrow: nh >= 24 };
+  }
+  function nextHTML(t, where, hours, maxDoses) {
+    if (!t) return "";
+    return `<div class="next"><small>Last given ${where} at ${t.given}</small>
+      <div class="when">Next dose: ${t.next}${t.tomorrow ? " tomorrow" : ""} <span>or later, if needed</span></div>
+      <div class="sub2">Not before then. This dose counts toward the ${maxDoses} in 24 hours.</div></div>`;
+  }
+  function nowVal() { const d = new Date(); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
+
+  let last = null;
+  function render() {
+    const raw = parseFloat($("w").value);
+    const age = $("age").value;
+    $("err").textContent = "";
+    const kg = unit === "lb" ? raw / 2.20462 : raw;
+    $("o-name").textContent = $("nm").value.trim() || "________________";
+    $("o-age").textContent = AGE[age];
+    $("o-pv").textContent = $("pv").value.trim() ? "Provider: " + $("pv").value.trim() : "";
+    if (!raw || isNaN(raw) || kg < 3 || kg > 150) {
+      $("err").textContent = !raw ? "Enter the child's weight." : "Check the weight. Enter a weight between 3 and 150 kg (about 6.6 to 330 lb).";
+      $("o-wt").textContent = "—";
+      $("apap").innerHTML = `<div class="note">Enter a weight to see the dose.</div>`;
+      $("ibu").innerHTML = `<div class="note">Enter a weight to see the dose.</div>`;
+      last = null; return;
+    }
+    const lb = kg * 2.20462;
+    $("o-wt").textContent = `${fmt(Math.round(lb * 10) / 10)} lb (${fmt(Math.round(kg * 10) / 10)} kg)`;
+    const r = calc(kg, age);
+    const ta = timing($("a-t").value, 4);
+    const ti = r.ibu ? timing($("i-t").value, 6) : null;
+    $("apap").innerHTML = apapHTML(r.apap, age).replace("<!--NEXT-->", nextHTML(ta, $("a-w").value, 4, "5 doses"));
+    $("ibu").innerHTML = ibuHTML(r.ibu).replace("<!--NEXT-->", nextHTML(ti, $("i-w").value, 6, "4 doses"));
+    last = { r, age, lb, kg, ta, ti };
+  }
+
+  function asText() {
+    if (!last) return "";
+    const { r, age } = last;
+    const nm = $("nm").value.trim();
+    const L = [];
+    L.push(`Fever and pain medicine dosing${nm ? " for " + nm : ""}`);
+    L.push(`Weight: ${$("o-wt").textContent}. Age: ${AGE[age]}. Date: ${$("o-date").textContent}.`);
+    L.push("");
+    L.push(`Tylenol (acetaminophen), Infants' or Children's liquid 160 mg/5 mL: give ${fmt(r.apap.mL)} mL (${fmt(r.apap.mg)} mg) every 4 to 6 hours as needed. No more than 5 doses in 24 hours.${age === "u3" ? " Give only if your provider has told you to." : ""}`);
+    if (r.ibu) L.push(`Motrin or Advil (ibuprofen), Children's liquid 100 mg/5 mL: give ${fmt(r.ibu.mL)} mL (${fmt(r.ibu.mg)} mg) every 6 to 8 hours as needed, with food. No more than 4 doses in 24 hours.`);
+    else L.push("Ibuprofen (Motrin or Advil): do not give. It is not for babies under 6 months old.");
+    if (last.ta) L.push(`Tylenol was last given ${$("a-w").value} at ${last.ta.given}. Next Tylenol dose: ${last.ta.next}${last.ta.tomorrow ? " tomorrow" : ""} or later, only if needed.`);
+    if (last.ti) L.push(`Motrin was last given ${$("i-w").value} at ${last.ti.given}. Next Motrin dose: ${last.ti.next}${last.ti.tomorrow ? " tomorrow" : ""} or later, only if needed.`);
+    L.push("");
+    L.push("Use the syringe that comes with the medicine. Check cold and flu products for hidden acetaminophen. Call us for fever of 104°F or higher, fever lasting more than 3 days, trouble breathing, not drinking, or if your child seems very ill. If you think you gave too much, call Poison Control at 1-800-222-1222.");
+    return L.join("\n");
+  }
+
+  function setUnit(u) {
+    if (u === unit) return;
+    const v = parseFloat($("w").value);
+    if (!isNaN(v)) $("w").value = fmt(Math.round((u === "kg" ? v / 2.20462 : v * 2.20462) * 10) / 10);
+    unit = u;
+    $("u-lb").setAttribute("aria-pressed", u === "lb");
+    $("u-kg").setAttribute("aria-pressed", u === "kg");
+    render();
+  }
+
+  const d = new Date();
+  $("o-date").textContent = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  ["w", "nm", "pv"].forEach((id) => $(id).addEventListener("input", () => { $("status").textContent = ""; render(); }));
+  $("age").addEventListener("change", () => { $("status").textContent = ""; render(); });
+  ["a-t", "i-t", "a-w", "i-w"].forEach((id) => { $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
+  $("now-a").addEventListener("click", () => { $("a-t").value = nowVal(); render(); });
+  $("now-i").addEventListener("click", () => { $("i-t").value = nowVal(); render(); });
+  $("u-lb").addEventListener("click", () => setUnit("lb"));
+  $("u-kg").addEventListener("click", () => setUnit("kg"));
+  $("copy").addEventListener("click", () => {
+    const t = asText();
+    if (!t) { $("status").textContent = "Enter a weight first."; return; }
+    const done = () => { $("status").textContent = "Copied. Paste into the visit summary or a message."; };
+    const fallback = () => {
+      const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { $("status").textContent = "Copy was blocked. Select the text on the sheet instead."; }
+      ta.remove();
+    };
+    try { navigator.clipboard.writeText(t).then(done, fallback); } catch (e) { fallback(); }
+  });
+  // Print works when the page is opened directly (local file or its own website); it is hidden when embedded in a frame, which may block printing
+  if (window.self === window.top) { $("print").hidden = false; $("print").addEventListener("click", () => window.print()); }
+  window.__calc = calc;
+  render();
+})();
+</script>
+</html>
