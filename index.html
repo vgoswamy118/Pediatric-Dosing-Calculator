@@ -43,7 +43,7 @@ body { margin: 0; background: var(--desk); color: var(--ink); font-family: var(-
 .err { color: var(--alert); font-weight: 700; font-size: 13px; }
 
 /* Sheet */
-.sheet { max-width: 8.5in; margin: 0 auto; background: var(--paper); padding: 0.36in 0.5in 0.25in; box-shadow: 0 1px 4px rgba(0,0,0,.12); font-size: 9.6pt; line-height: 1.36; }
+.sheet { max-width: 8.5in; margin: 0 auto; background: var(--paper); padding: 0.3in 0.5in 0.2in; box-shadow: 0 1px 4px rgba(0,0,0,.12); font-size: 9.6pt; line-height: 1.36; }
 header.top { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--ink); padding-bottom: 6px; margin-bottom: 10px; gap: 10px; }
 .logo { font-size: 17pt; letter-spacing: 2.5px; }
 .logo b { font-weight: 700; }
@@ -82,9 +82,10 @@ li { margin-bottom: 2px; }
 .cols > div { min-width: 0; }
 .call { border-left: 4px solid var(--alert); }
 .bottom { background: var(--sand); border-left: 4px solid var(--ink); padding: 7px 10px; margin-top: 10px; border-radius: 0 6px 6px 0; }
+.never { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 28px; margin-top: 7px; padding: 4px 10px; border: 2px solid var(--alert); border-radius: 6px; background: var(--alert-bg); color: var(--alert); font-weight: 700; font-size: 10.5pt; text-align: center; }
 .log { width: 100%; border-collapse: collapse; font-size: 8.4pt; margin-top: 4px; }
 .log th { text-align: left; background: var(--ink); color: var(--paper); padding: 3px 6px; font-size: 7.6pt; letter-spacing: .6px; text-transform: uppercase; }
-.log td { border-bottom: 1px solid var(--rule); height: 19px; }
+.log td { border-bottom: 1px solid var(--rule); height: 17px; }
 .foot { border-top: 1px solid #ccc; margin-top: 9px; padding-top: 5px; font-size: 6.8pt; color: #666; line-height: 1.35; display: flex; justify-content: space-between; gap: 12px; }
 .sig { white-space: nowrap; }
 
@@ -189,6 +190,8 @@ li { margin-bottom: 2px; }
   </table>
 
   <div class="bottom"><b>Bottom line:</b> Give the amount for your child's weight, wait the full time between doses, and stay under the daily limit. Doses change as your child grows, so ask us for an updated sheet if their weight changes.</div>
+
+  <div class="never" role="note"><span>No aspirin, ever.</span><span>No Motrin (ibuprofen) for children under 6 months.</span></div>
 
   <div class="foot"><span>Doses follow standard pediatric weight-based dosing: acetaminophen 10 to 15 mg/kg every 4 to 6 hours (maximum 5 doses, 75 mg/kg, or 4,000 mg per day) and ibuprofen 5 to 10 mg/kg every 6 to 8 hours (maximum 4 doses or 40 mg/kg per day), for children 6 months and older. This sheet is for this child only and does not replace advice from your provider.</span><span class="sig" id="o-pv"></span></div>
 </article>
