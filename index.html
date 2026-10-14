@@ -174,7 +174,7 @@ li { margin-bottom: 2px; }
       <h3>Call us or get care right away if</h3>
       <ul>
         <li>Your baby is <b>under 3 months</b> with a temperature of <b>100.4°F</b> or higher</li>
-        <li><b>Any fever that concerns you</b>, or your child feels warm to you (regardless of the measured temperature)</li>
+        <li><b>Any fever that concerns you</b></li>
         <li>Trouble breathing, a stiff neck, a seizure, or a rash that looks like bruises or tiny dots</li>
         <li>Very sleepy, hard to wake, or will not stop crying</li>
         <li>Not drinking, or fewer wet diapers (fewer than 3 in 24 hours)</li>
@@ -348,7 +348,7 @@ li { margin-bottom: 2px; }
     if (last.ta) L.push(`Tylenol was last given ${$("a-w").value} at ${last.ta.given}. Next Tylenol dose: ${last.ta.next}${last.ta.tomorrow ? " tomorrow" : ""} or later, only if needed.`);
     if (last.ti) L.push(`Motrin was last given ${$("i-w").value} at ${last.ti.given}. Next Motrin dose: ${last.ti.next}${last.ti.tomorrow ? " tomorrow" : ""} or later, only if needed.`);
     L.push("");
-    L.push("Use the syringe that comes with the medicine. Check cold and flu products for hidden acetaminophen. Call us for any fever that concerns you, or if your child feels warm to you (regardless of the measured temperature), trouble breathing, not drinking, or if your child seems very ill. If you think you gave too much, call Sollis Health at (561) 560-7600.");
+    L.push("Use the syringe that comes with the medicine. Check cold and flu products for hidden acetaminophen. Call us for any fever that concerns you, trouble breathing, not drinking, or if your child seems very ill. If you think you gave too much, call Sollis Health at (561) 560-7600.");
     return L.join("\n");
   }
 
