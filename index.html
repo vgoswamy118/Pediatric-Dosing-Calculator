@@ -78,6 +78,8 @@ li { margin-bottom: 2px; }
 .note { font-size: 8.4pt; color: var(--muted); }
 .stop { background: var(--alert-bg); color: var(--alert); border-radius: 6px; padding: 8px 10px; font-weight: 700; font-size: 9.4pt; }
 .stop span { display: block; font-weight: 400; color: var(--ink); font-size: 8.8pt; margin-top: 3px; }
+.tip { margin: -4px 0 8px; font-size: 9.2pt; }
+.tip[hidden] { display: none; }
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-top: 4px; }
 .cols > div { min-width: 0; }
 .call { border-left: 4px solid var(--alert); }
@@ -158,6 +160,7 @@ li { margin-bottom: 2px; }
     <section class="med" id="apap"></section>
     <section class="med" id="ibu"></section>
   </div>
+  <p class="tip" id="alt-tip"><b>A common, effective schedule:</b> alternate Tylenol and Motrin every 4 hours while your child is awake, so neither is given too often.</p>
 
   <div class="cols">
     <div>
@@ -166,7 +169,6 @@ li { margin-bottom: 2px; }
         <li><b>Use the syringe or cup that came with the medicine.</b> Kitchen spoons are not accurate.</li>
         <li><b>Check the strength on the box.</b> The doses above only work for the strengths listed. Store brands are fine if the strength matches.</li>
         <li><b>Read the labels of cold and flu products.</b> Many already contain acetaminophen (Tylenol). Do not double up.</li>
-        <li><b>Never give aspirin</b> to children or teens.</li>
         <li>The goal is comfort, not a normal temperature. Let a sleeping child sleep.</li>
       </ul>
     </div>
@@ -177,8 +179,8 @@ li { margin-bottom: 2px; }
         <li><b>Any fever that concerns you</b></li>
         <li>Trouble breathing, a stiff neck, a seizure, or a rash that looks like bruises or tiny dots</li>
         <li>Very sleepy, hard to wake, or will not stop crying</li>
-        <li>Not drinking, or fewer wet diapers (fewer than 3 in 24 hours)</li>
-        <li>You think you gave too much medicine. Call <b>Sollis Health at (561)&nbsp;560&#8209;7600</b>.</li>
+        <li>Not drinking, crying without tears, or fewer wet diapers (fewer than 3 in 24 hours)</li>
+        <li>Call <b>Sollis Health at (561)&nbsp;560&#8209;7600</b> for any questions.</li>
       </ul>
     </div>
   </div>
@@ -235,8 +237,10 @@ li { margin-bottom: 2px; }
     else {
       const iMax = Math.min(10 * kg, 400);
       const iML = measure(iMax / 20); // 100 mg / 5 mL
-      // Infants' drops, 50 mg / 1.25 mL (40 mg/mL), 6 to 23 months: 10 mg/kg, rounded down to 0.1 mL
-      const dML = Math.floor(Math.min(10 * kg, 400) / 40 * 10 + 1e-9) / 10;
+      // Infants' drops, 50 mg / 1.25 mL (40 mg/mL), 6 to 23 months: 10 mg/kg, rounded down to 0.1 mL,
+      // never above the package label (under 18 lb: 1.25 mL; 18 lb and up: 1.875 mL)
+      const label = kg * 2.20462 < 18 ? 1.25 : 1.875;
+      const dML = Math.min(Math.floor(Math.min(10 * kg, 400) / 40 * 10 + 1e-9) / 10, label);
       const drops = (age === "m6" || age === "m12") && kg >= 1 && dML > 0 ? dML : null;
       out.ibu = {
         mL: iML, mg: iML * 20,
@@ -273,7 +277,7 @@ li { margin-bottom: 2px; }
     if (!d) return `<div class="name"><b>Motrin® or Advil® (ibuprofen)</b><span>For fever or pain</span></div>
       <div class="stop">Do not give ibuprofen yet.<span>Ibuprofen is not for babies under 6 months old. Use only acetaminophen (Tylenol or Genexa), and only as directed.</span></div>`;
     const rows = [];
-    if (d.drops) rows.push(`<div><span>Infants' drops, 50 mg in 1.25 mL (use an oral syringe marked in 0.1 mL)</span><b>${fmt(d.drops)} mL (${fmt(d.dropsMg)} mg)</b></div>`);
+    if (d.drops) rows.push(`<div><span>Infants' drops, 50 mg in 1.25 mL${d.drops === 1.25 || d.drops === 1.875 ? "" : " (use an oral syringe marked in 0.1 mL)"}</span><b>${+d.drops.toFixed(3)} mL (${fmt(d.dropsMg)} mg)</b></div>`);
     if (d.chew) rows.push(`<div><span>Children's chewable tablets, 100 mg</span><b>${d.chew} tablet${d.chew > 1 ? "s" : ""} (${d.chew * CH} mg)</b></div>`);
     if (d.t200) rows.push(`<div><span>Adult tablets, 200 mg</span><b>${d.t200} tablet${d.t200 > 1 ? "s" : ""} (${d.t200 * 200} mg)</b></div>`);
     const alt = rows.length ? `<div class="alt"><div class="note" style="margin-bottom:2px">Or, instead of children's liquid:</div>${rows.join("")}</div>` : "";
@@ -355,6 +359,8 @@ li { margin-bottom: 2px; }
     const ti = r.ibu ? plan(gi, 6, ga) : null;
     $("apap").innerHTML = apapHTML(r.apap, age).replace("<!--NEXT-->", nextHTML(ta, $("a-w").value, "Motrin", "5 doses"));
     $("ibu").innerHTML = ibuHTML(r.ibu).replace("<!--NEXT-->", nextHTML(ti, $("i-w").value, "Tylenol", "4 doses"));
+    // Alternating tip only applies once ibuprofen is allowed (6 months and older)
+    $("alt-tip").hidden = !r.ibu;
     last = { r, age, lb, kg, ta, ti };
   }
 
@@ -367,14 +373,15 @@ li { margin-bottom: 2px; }
     L.push(`Weight: ${$("o-wt").textContent}. Age: ${AGE[age]}. Date: ${$("o-date").textContent}.`);
     L.push("");
     L.push(`Tylenol or Genexa (acetaminophen), Infants' or Children's liquid 160 mg/5 mL: give ${fmt(r.apap.mL)} mL (${fmt(r.apap.mg)} mg) every 4 to 6 hours as needed. No more than 5 doses in 24 hours.${age === "u3" ? " Give only if your provider has told you to." : ""}`);
-    if (r.ibu) L.push(`Motrin or Advil (ibuprofen), Children's liquid 100 mg/5 mL: give ${fmt(r.ibu.mL)} mL (${fmt(r.ibu.mg)} mg) every 6 to 8 hours as needed, with food. No more than 4 doses in 24 hours.${r.ibu.drops ? ` Or, Infants' drops 50 mg/1.25 mL: give ${fmt(r.ibu.drops)} mL (${fmt(r.ibu.dropsMg)} mg) instead.` : ""}`);
+    if (r.ibu) L.push(`Motrin or Advil (ibuprofen), Children's liquid 100 mg/5 mL: give ${fmt(r.ibu.mL)} mL (${fmt(r.ibu.mg)} mg) every 6 to 8 hours as needed, with food. No more than 4 doses in 24 hours.${r.ibu.drops ? ` Or, Infants' drops 50 mg/1.25 mL: give ${+r.ibu.drops.toFixed(3)} mL (${fmt(r.ibu.dropsMg)} mg) instead.` : ""}`);
+    if (r.ibu) L.push("A common, effective schedule: alternate Tylenol and Motrin every 4 hours while your child is awake. This also keeps either medicine from being given too often.");
     else L.push("Ibuprofen (Motrin or Advil): do not give. It is not for babies under 6 months old.");
     if (last.ta && last.ta.own) L.push(`Tylenol was last given ${$("a-w").value} at ${at(last.ta.own)}.`);
     if (last.ti && last.ti.own) L.push(`Motrin was last given ${$("i-w").value} at ${at(last.ti.own)}.`);
     if (last.ta) L.push(`Next Tylenol dose: ${at(last.ta.next)} or later, only if needed.`);
     if (last.ti) L.push(`Next Motrin dose: ${at(last.ti.next)} or later, only if needed.`);
     L.push("");
-    L.push("Use the syringe that comes with the medicine. Check cold and flu products for hidden acetaminophen. Call us for any fever that concerns you, trouble breathing, not drinking, or if your child seems very ill. If you think you gave too much, call Sollis Health at (561) 560-7600.");
+    L.push("Use the syringe that comes with the medicine. Check cold and flu products for hidden acetaminophen. Call us for any fever that concerns you, trouble breathing, not drinking, crying without tears, fewer wet diapers, or if your child seems very ill. Call Sollis Health at (561) 560-7600 for any questions.");
     return L.join("\n");
   }
 
