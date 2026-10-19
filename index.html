@@ -238,10 +238,11 @@ li { margin-bottom: 2px; }
       const iMax = Math.min(10 * kg, 400);
       const iML = measure(iMax / 20); // 100 mg / 5 mL
       // Infants' drops, 50 mg / 1.25 mL (40 mg/mL), 6 to 23 months: 10 mg/kg, rounded down to 0.1 mL,
-      // never above the package label (under 18 lb: 1.25 mL; 18 lb and up: 1.875 mL)
-      const label = kg * 2.20462 < 18 ? 1.25 : 1.875;
+      // never above the package label (under 18 lb: 1.25 mL; 18 to 23 lb: 1.875 mL), and not shown above 23 lb
+      const lbs = kg * 2.20462;
+      const label = lbs < 18 ? 1.25 : 1.875;
       const dML = Math.min(Math.floor(Math.min(10 * kg, 400) / 40 * 10 + 1e-9) / 10, label);
-      const drops = (age === "m6" || age === "m12") && kg >= 1 && dML > 0 ? dML : null;
+      const drops = (age === "m6" || age === "m12") && kg >= 1 && lbs <= 23 + 1e-6 && dML > 0 ? dML : null;
       out.ibu = {
         mL: iML, mg: iML * 20,
         drops: drops, dropsMg: drops ? drops * 40 : null,
